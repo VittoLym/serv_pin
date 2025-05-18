@@ -1,0 +1,30 @@
+from flask import Flask, request, render_template,jsonify
+from datetime import datetime
+import os
+app = Flask(__name__)
+
+sms_db = []
+
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('main.html')
+
+@app.route('/sms', methods=['POST'])
+def sms():
+    data = request.get_json()
+    print(data)
+    sms_db.append({
+        "numero": data["numero"],
+        "texto": data["texto"],
+        "timestamp": datetime.now().isoformat()
+    })
+    print(f"Mensaje de {data['numero']}: {data['texto']}")
+    return "OK"
+
+@app.route('/sms-history', methods=['GET'])
+def get_sms_history():
+    sorted_sms = sorted(sms_db, key=lambda x: x['timestamp'], reverse=True)
+    return jsonify(sorted_sms)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de SMS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #sms-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #sms-table th, #sms-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        #sms-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #sms-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        #sms-table tr:hover {
+            background-color: #e9e9e9;
+        }
+        .timestamp {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .refresh-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>📱 SMS Recibidos</h1>
+    <button id="refresh-btn" class="refresh-btn">Actualizar</button>
+    <table id="sms-table">
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Mensaje</th>
+                <th>Fecha/Hora</th>
+            </tr>
+        </thead>
+        <tbody id="sms-body">
+            <!-- Los SMS se cargarán aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        // URL de tu servidor Flask (cambia si es necesario)
+        const API_URL = 'http://192.168.1.40:5000/sms-history';  // 👈 Necesitarás implementar este endpoint
+
+        // Función para cargar SMS
+        async function loadSMS() {
+            try {
+                const response = await fetch(API_URL);
+                const smsList = await response.json();
+                
+                const tableBody = document.getElementById('sms-body');
+                tableBody.innerHTML = '';  // Limpiar tabla
+                
+                smsList.forEach(sms => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${sms.numero}</td>
+                        <td>${sms.texto}</td>
+                        <td class="timestamp">${new Date(sms.timestamp).toLocaleString()}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error al cargar SMS:", error);
+                alert("⚠️ No se pudieron cargar los SMS. Verifica la consola para más detalles.");
+            }
+        }
+
+        // Botón de actualización
+        document.getElementById('refresh-btn').addEventListener('click', loadSMS);
+
+        // Cargar SMS al iniciar
+        loadSMS();
+
+        // Opcional: Actualizar automáticamente cada 5 segundos
+        setInterval(loadSMS, 10000);
+    </script>
+</body>
+</html>
