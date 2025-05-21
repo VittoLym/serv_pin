@@ -58,7 +58,8 @@
     <table id="sms-table">
         <thead>
             <tr>
-                <th>Número</th>
+                <th>Remitente</th>
+                <th>Destinatario</th>  <!-- Nueva columna -->
                 <th>Mensaje</th>
                 <th>Fecha/Hora</th>
             </tr>
@@ -69,41 +70,34 @@
     </table>
 
     <script>
-        // URL de tu servidor Flask (cambia si es necesario)
-        const API_URL ='/sms-history'
+        const API_URL = '/sms-history';
 
-        // Función para cargar SMS
         async function loadSMS() {
             try {
                 const response = await fetch(API_URL);
                 const smsList = await response.json();
                 
                 const tableBody = document.getElementById('sms-body');
-                tableBody.innerHTML = '';  // Limpiar tabla
+                tableBody.innerHTML = '';
                 
                 smsList.forEach(sms => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${sms.numero}</td>
+                        <td>${sms.numero || 'Desconocido'}</td>
+                        <td>${sms.destinatario || 'N/A'}</td>  <!-- Muestra destinatario -->
                         <td>${sms.texto}</td>
                         <td class="timestamp">${new Date(sms.timestamp).toLocaleString()}</td>
                     `;
                     tableBody.appendChild(row);
                 });
             } catch (error) {
-                console.error("Error al cargar SMS:", error);
-                alert("⚠️ No se pudieron cargar los SMS. Verifica la consola para más detalles.");
+                console.error("Error:", error);
             }
         }
 
-        // Botón de actualización
         document.getElementById('refresh-btn').addEventListener('click', loadSMS);
-
-        // Cargar SMS al iniciar
         loadSMS();
-
-        // Opcional: Actualizar automáticamente cada 5 segundos
-        setInterval(loadSMS, 10000);
+        setInterval(loadSMS, 10000);  // Actualiza cada 10 segundos
     </script>
 </body>
 </html>

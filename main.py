@@ -12,13 +12,18 @@ def home():
 @app.route('/sms', methods=['POST'])
 def sms():
     data = request.get_json()
-    print(data)
+    perfil = 'N/A' 
+    destinatario = data.get('destinatario','Desconocido')
+    if('6114777' in destinatario):
+        perfil = 'bzurita'
+    elif '6600265' in destinatario:
+        perfil = 'noesosa'
     sms_db.append({
         "numero": data["numero"],
         "texto": data["texto"],
+        "destinatario": perfil,
         "timestamp": datetime.now().isoformat()
     })
-    print(f"Mensaje de {data['numero']}: {data['texto']}")
     return "OK"
 
 @app.route('/sms-history', methods=['GET'])
