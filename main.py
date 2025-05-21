@@ -14,7 +14,7 @@ def sms():
     data = request.get_json()
     perfil = 'N/A' 
     destinatario = data.get('destinatario','Desconocido')
-    if('6114777' in destinatario):
+    if('6120302' in destinatario):
         perfil = 'bzurita'
     elif '6600265' in destinatario:
         perfil = 'noesosa'
