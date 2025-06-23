@@ -16,8 +16,10 @@ def sms():
     destinatario = data.get('destinatario','Desconocido')
     if('6120302' in destinatario):
         perfil = 'bzurita'
-    elif '6600265' in destinatario:
+    elif '629967' in destinatario:
         perfil = 'noesosa'
+    elif '602173' in destinatario:
+        perfil = 'evelazqu'
     sms_db.append({
         "numero": data["numero"],
         "texto": data["texto"],
