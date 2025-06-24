@@ -11,22 +11,42 @@ def home():
 
 @app.route('/sms', methods=['POST'])
 def sms():
-    data = request.get_json()
-    perfil = 'N/A' 
-    destinatario = data.get('destinatario','Desconocido')
-    if('6120302' in destinatario):
-        perfil = 'bzurita'
-    elif '629967' in destinatario:
-        perfil = 'noesosa'
-    elif '602173' in destinatario:
-        perfil = 'evelazqu'
-    sms_db.append({
-        "numero": data["numero"],
-        "texto": data["texto"],
-        "destinatario": perfil,
-        "timestamp": datetime.now().isoformat()
-    })
-    return "OK"
+    PERFILES = {
+        '6120302': 'bzurita',
+        '629967': 'noesosa',
+        '602173': 'evelazqu'
+    }
+    
+    try:
+        data = request.get_json()
+        
+        # Validar datos obligatorios
+        if not data or 'numero' not in data or 'texto' not in data:
+            return "Faltan campos obligatorios (numero o texto)", 400
+            
+        # Determinar perfil
+        destinatario = data.get('destinatario', 'Desconocido')
+        perfil = 'N/A'
+        
+        # Buscar número en los perfiles (versión mejorada)
+        for num, perf in PERFILES.items():
+            if num in destinatario:
+                perfil = perf
+                break
+        
+        # Almacenar SMS
+        sms_db.append({
+            "numero": data["numero"],
+            "texto": data["texto"],
+            "destinatario": perfil,
+            "timestamp": datetime.now().isoformat()
+        })
+        
+        return "OK", 200
+        
+    except Exception as e:
+        # Loggear el error si es necesario
+        return f"Error al procesar SMS: {str(e)}", 500
 
 @app.route('/sms-history', methods=['GET'])
 def get_sms_history():
